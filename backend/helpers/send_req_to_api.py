@@ -16,8 +16,8 @@ def send_to_hf(input_text):
     payload = {
         "inputs": input_text
     }
+    
     response = requests.post(URL, json=payload, headers=headers)
-    print(response)
     if response.status_code != 200:
         raise requests.exceptions.HTTPError(f"Error from huggingface API: {response.text}")
     return response.json()
