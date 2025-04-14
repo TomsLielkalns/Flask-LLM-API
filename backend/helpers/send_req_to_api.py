@@ -1,10 +1,10 @@
 import os
 import requests
 
+URL = os.getenv("HF_API_URL")
+API_KEY = os.getenv("HF_API_KEY")
 
 def send_to_hf(input_text):
-    URL = os.getenv("HF_API_URL")
-    API_KEY = os.getenv("HF_API_KEY")
 
     if not URL or not API_KEY:
         raise ValueError("API URL and API Key must be set in environment variables.")

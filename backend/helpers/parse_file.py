@@ -1,5 +1,6 @@
 import csv
 import io
+import os
 import json
 
 def parse_file(file, abort):
@@ -14,27 +15,27 @@ def parse_file(file, abort):
 
     try:
         content = file.read()
-        if file.filename.endswith(".txt"):
-            return content.decode("utf-8")
+        _, ext = os.path.splitext(file.filename)
         
-        elif file.filename.endswith(".csv"):
-            text_parts = []
-            csv_reader = csv.DictReader(io.StringIO(content.decode("utf-8")))
-            for row in csv_reader:
-                if "text" in row:
-                    text_parts.append(row["text"])
-            if not text_parts:
-                abort(400, description="CSV file does not contain a 'text' column")
-            return " ".join(text_parts)
-        
-        elif file.filename.endswith(".json"):
-            data = json.loads(content.decode("utf-8"))
-            if "text" not in data:
-                abort(400, description="JSON file does not contain a 'text' key")
-            return data["text"]
-        
-        else:
-            abort(400, description="Unsupported file type. Please upload a .txt, .csv, or .json file.")
+        match ext:
+            case ".txt":
+                return content.decode("utf-8")
+            case ".csv":
+                text_parts = []
+                csv_reader = csv.DictReader(io.StringIO(content.decode("utf-8")))
+                for row in csv_reader:
+                    if "text" in row:
+                        text_parts.append(row["text"])
+                if not text_parts:
+                    abort(400, description="CSV file does not contain a 'text' column")
+                return " ".join(text_parts)
+            case ".json":
+                data = json.loads(content.decode("utf-8"))
+                if "text" not in data:
+                    abort(400, description="JSON file does not contain a 'text' key")
+                return data["text"]
+            case _:
+                abort(400, description="Unsupported file type. Please upload a .txt, .csv, or .json file.")
             
     except Exception as e:
         abort(400, description=f"Error processing file: {e}")
